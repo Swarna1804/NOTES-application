@@ -19,7 +19,7 @@ export class NoteComponent {
   @Input() note: any;
 
   @Output() deleteEvent =
-    new EventEmitter<number>();
+    new EventEmitter<string>();
 
   @Output() editEvent =
     new EventEmitter<any>();

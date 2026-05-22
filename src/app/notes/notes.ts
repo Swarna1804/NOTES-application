@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 
 import { NoteComponent } from '../note/note';
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface Note {
 
-  id: number;
+  id: string;
 
   text: string;
 
@@ -80,6 +82,7 @@ export class NotesComponent {
   addNote() {
 
     if(this.newNote.trim()) {
+      console.log(uuidv4());
 
       this.notes.update(notes => [
 
@@ -87,7 +90,7 @@ export class NotesComponent {
 
         {
 
-          id: Date.now(),
+          id: uuidv4(),
 
           text: this.newNote,
 
@@ -104,7 +107,7 @@ export class NotesComponent {
 
   }
 
-  deleteNote(id: number) {
+  deleteNote(id: string) {
 
     this.notes.update(notes =>
 

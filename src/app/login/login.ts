@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
+import { AuthService } from '../services/auth';
+
 @Component({
+
   selector: 'app-login',
 
   standalone: true,
@@ -14,6 +17,7 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
 
   styleUrl: './login.css'
+
 })
 
 export class LoginComponent {
@@ -24,7 +28,7 @@ export class LoginComponent {
 
   errorMessage = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   login() {
 
@@ -71,5 +75,30 @@ export class LoginComponent {
     this.router.navigate(['/signup']);
 
   }
+  googleLogin() {
+
+  this.authService
+    .loginWithGoogle()
+
+    .then(() => {
+
+      localStorage.setItem(
+        'loggedIn',
+        'true'
+      );
+
+      this.router.navigate([
+        '/notes'
+      ]);
+
+    })
+
+    .catch(error => {
+
+      console.log(error);
+
+    });
+
+}
 
 }
