@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
   templateUrl: './signup.html',
 
-  styleUrl: './signup.css'
+  styleUrls: ['./signup.css']
 })
 
 export class SignupComponent {
@@ -30,10 +30,15 @@ export class SignupComponent {
 
   signup() {
 
-    const users =
-      JSON.parse(
-        localStorage.getItem('users') || '[]'
-      );
+    let users: any[] = [];
+    try {
+      users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (!Array.isArray(users)) {
+        users = [];
+      }
+    } catch {
+      users = [];
+    }
 
     const userExists = users.find(
       (user:any) =>

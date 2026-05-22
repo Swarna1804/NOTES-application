@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './note.html',
-  styleUrl: './note.css'
+  styleUrls: ['./note.css']
 })
 export class NoteComponent {
 

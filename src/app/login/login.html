@@ -19,10 +19,13 @@
     <button (click)="login()">
       Login
     </button>
+
     <button
-  class="google-btn"
-  (click)="googleLogin()">
-  Continue with Google
+      class="google-btn"
+      (click)="googleLogin()"
+      [disabled]="isGoogleSigningIn"
+    >
+      {{ isGoogleSigningIn ? 'Signing in...' : 'Signin with Google' }}
     </button>
 
     <p class="error">

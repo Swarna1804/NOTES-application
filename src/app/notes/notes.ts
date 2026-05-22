@@ -1,10 +1,8 @@
 import { Component, effect, signal } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 import { NoteComponent } from '../note/note';
-
-import { v4 as uuidv4 } from 'uuid';
+import { AuthService } from '../services/auth';
 
 interface Note {
 
@@ -29,7 +27,7 @@ interface Note {
 
   templateUrl: './notes.html',
 
-  styleUrl: './notes.css'
+  styleUrls: ['./notes.css']
 })
 
 export class NotesComponent {
@@ -49,62 +47,68 @@ export class NotesComponent {
     );
   }
 
-  constructor() {
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
 
-    if(typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
 
-      const savedNotes =
-        localStorage.getItem('notes');
+      const savedNotes = localStorage.getItem('notes');
 
-      if(savedNotes) {
-
-        this.notes.set(
-          JSON.parse(savedNotes)
-        );
+      if (savedNotes) {
+        this.notes.set(this.parseSavedNotes(savedNotes));
       }
 
       effect(() => {
-
-        localStorage.setItem(
-
-          'notes',
-
-          JSON.stringify(this.notes())
-
-        );
-
+        localStorage.setItem('notes', JSON.stringify(this.notes()));
       });
-
     }
+  }
 
+  private parseSavedNotes(value: string): Note[] {
+    try {
+      const saved = JSON.parse(value);
+
+      if (!Array.isArray(saved)) {
+        return [];
+      }
+
+      return saved.map((note: any) => ({
+        id: String(note?.id ?? this.generateNoteId()),
+        text: String(note?.text ?? ''),
+        date: String(note?.date ?? new Date().toLocaleString()),
+        pinned: Boolean(note?.pinned ?? false),
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  private generateNoteId(): string {
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return (crypto as any).randomUUID();
+    }
+    return Math.random().toString(36).slice(2) + Date.now().toString(36);
   }
 
   addNote() {
 
-    if(this.newNote.trim()) {
-      console.log(uuidv4());
+    if (this.newNote.trim()) {
+      const id = this.generateNoteId();
 
       this.notes.update(notes => [
-
         ...notes,
-
         {
-
-          id: uuidv4(),
-
+          id,
           text: this.newNote,
-
           date: new Date().toLocaleString(),
-
-          pinned: false
-        }
-
+          pinned: false,
+        },
       ]);
 
       this.newNote = '';
-
     }
-
   }
 
   deleteNote(id: string) {
@@ -141,11 +145,9 @@ export class NotesComponent {
 
       .filter(note =>
 
-        note.text
+        String(note.text || '')
           .toLowerCase()
-          .includes(
-            this.searchText.toLowerCase()
-          )
+          .includes(this.searchText.toLowerCase())
 
       )
 
@@ -173,6 +175,19 @@ export class NotesComponent {
 
     );
 
+  }
+
+  logout() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('currentUser');
+    }
+
+    this.authService.logout().catch(() => {
+      // If Firebase logout fails, still navigate away and clear local state.
+    });
+
+    this.router.navigate(['/']);
   }
 
 }

@@ -2,22 +2,32 @@
 
   <div class="container">
 
-    <h1>Notes App</h1>
+    <div class="top-actions">
+      <div class="left-actions">
+        <button
+          class="theme-btn"
+          (click)="toggleTheme()"
+        >
 
-    <button
-      class="theme-btn"
-      (click)="toggleTheme()"
-    >
+          @if(darkMode()) {
+            Dark Mode
+          }
 
-      @if(darkMode()) {
-        Dark Mode
-      }
+          @else {
+            Light Mode
+          }
 
-      @else {
-        Light Mode
-      }
+        </button>
+      </div>
 
-    </button>
+      <h1>Notes Application</h1>
+
+      <div class="right-actions">
+        <button class="logout-btn" (click)="logout()">
+          Logout
+        </button>
+      </div>
+    </div>
 
     <div class="add-section">
 
